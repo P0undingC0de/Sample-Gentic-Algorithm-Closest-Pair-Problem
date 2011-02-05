@@ -1,0 +1,67 @@
+Luke Duncan Sample Work
+Licensed under Apache 2
+www.lukejduncan.com
+
+This is old sample work from my undergraduate career, and was originally written sometime in 2009.
+
+I originally wrote a blog entry about this on my old website, and have included it below for reference:
+
+==========================================================================================================
+
+By Luke on November 27, 2009 2:29 PM
+
+For my algorithms class I was allowed to do a non-trivial implementation of any algorithm I wanted.  In class, we discussed the divide-and-conquer approach for the closest pair problem that I used in my Discrete Math class for a UVa solution.  Since I've been looking for an excuse to play with genetic algorithms a bit, this seemed like the perfect opportunity.  Modelling and writing the genetic algo myself, I used my existing DnC algo for comparison.  
+
+My chromosomes were modelled as any pair of existing points.  
+
+struct chromosome
+{
+    point points[2];
+    double fitness;
+};
+
+
+Cross-overs were executed as any swapping of points in a population between two chromosomes (making sure that no chromosome contained the same point), and mutations were defined as the random swapping of a point in a chromosome from any legal point.  The major distinction here is that the cross-overs only select from within the chromosome population, while the mutation makes any legal random change to a chromosome, thus creating a more diverse population.  All of that probably sounded very weird if you're new to genetic algorithms, but that's nothing a brief reading from the above links to wikipedia won't fix. 
+
+void mutation(chromosome &chrome1, vector<point> &allPoints)
+/*
+* Pre:    a chromosome, and all possible points are passed
+* Post: a random mutation is executed
+*/
+{
+    int toReplace, toGet;
+    toReplace = rand() % 2; // 0 or 1, x or y
+    toGet = rand() % allPoints.size();
+
+    if(toReplace  && chrome1.points[1].index != allPoints[toGet].index) chrome1.points[0] = allPoints[toGet];
+    else if (!toReplace  && chrome1.points[0].index != allPoints[toGet].index) chrome1.points[1] = allPoints[toGet];
+}
+
+
+void crossOver(chromosome &chrome1, chromosome &chrome2)
+/*
+* Pre:    two chromosomes are passed
+* Post: a crossover is produced
+*/
+{
+    int toReplace, toGet;
+    int toMutate = rand() % 2;
+    toReplace = rand() % 2; // 0 or 1, x or y
+    toGet = rand() % 2; // 0 or 1, x or y
+
+    while(chrome1.points[toReplace].index == chrome1.points[toGet].index)
+    {
+        toReplace = rand() % 2; // 0 or 1, x or y
+        toGet = rand() % 2; // 0 or 1, x or y
+    }
+
+    swap(chrome1.points[toReplace], chrome2.points[toGet]);
+}
+
+
+There is a lot of room for improvement in my implementation, but such is the nature of doing things for the first time.  Things I could have done differently include:
+Variable size populations, dependant on the number of points passed
+Fewer mutations, this is probably inefficient. 
+Cross-over selection could be less random, and more probabilistic (Roullete-Selection Method)
+The domain (closest pair problem) doesn't really call for a genetic algo, it just suited itself well to a beginners implementation of one. 
+The final point brings me to a brief analysis of the whole thing.  My implementation is correct most of the time, and even less so as the number of points increases.  Part of that is because genetic algorithms are typically used for things like optimization and approximation, not finding the exact anything. Regardless, I had fun working on this project and strengthened my understanding of a few things in the process.
